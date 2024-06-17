@@ -6,6 +6,13 @@ env:
   GITHUB_REPO: query-exporter
 
 tasks:
+  new:
+    desc: creates new helm chart out of starter chart
+    requires:
+      vars:
+        - NEW_HELM_CHART_NAME
+    cmds:
+      - helm create $NEW_HELM_CHART_NAME --starter $(pwd)/source/starter && mv $NEW_HELM_CHART_NAME source
   commitlint:
     desc: run commitlint
     cmds:
