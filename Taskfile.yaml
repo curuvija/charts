@@ -93,3 +93,15 @@ tasks:
     desc: replaces appVersion in Helm chart
     cmds:
       - export APP_VERSION=$(cat query-exporter/values.yaml | yq .image.tag) && yq e -i '.appVersion = env(APP_VERSION)' query-exporter/Chart.yaml
+  golden:
+    desc: update golden files
+    requires:
+      vars: 
+        - HELM_CHART_NAME
+    cmds:
+      - |
+        echo "working on chart $HELM_CHART_NAME"
+        for file in tests/$HELM_CHART_NAME/values/*; do
+          echo "working on file $($file)"
+          helm template source/$HELM_CHART_NAME -n default --values $file > tests/$HELM_CHART_NAME/golden/$(basename $file)
+        done

@@ -2,11 +2,9 @@
 
 A Helm chart to export queriy results from Oracle DB
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.5.1](https://img.shields.io/badge/AppVersion-0.5.1-informational?style=flat-square) 
-
 ## Additional Information
 
-[oracledb-exporter](https://github.com/iamseth/oracledb_exporter) exposes Prometheus metrics based on Oracle SQL queries. 
+[oracledb-exporter](https://github.com/iamseth/oracledb_exporter) exposes Prometheus metrics based on Oracle SQL queries.
 
 ## Maintainers
 
@@ -54,12 +52,12 @@ Now you can install oracle db exporter.
 
 ## Installing the Chart
 
-To install the chart with the release name `my-release`:
+To install the chart run:
 
 ```console
 $ helm repo add curuvija https://curuvija.github.io/helm-charts/
 $ helm repo update
-$ helm install curuvija/oracledb-exporter --version 0.1.0
+$ helm install oracledb-exporter curuvija/oracledb-exporter
 ```
 
 ## Configure Prometheus scraping
