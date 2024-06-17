@@ -1,8 +1,6 @@
 version: '3'
 
 env:
-  CHART_NAME: query-exporter
-  CHART_PATH: build
   GITHUB_REPO: query-exporter
 
 tasks:
@@ -29,11 +27,15 @@ tasks:
     desc: renders docs
     cmds:
       - helm-docs $CHART_PATH && cp $CHART_PATH/README.md .
-  tests:
+  test:
     desc: test helm chart
+    requires:
+      vars: 
+        - HELM_CHART_NAME
     cmds:
-      - cd tests && go test ./...
-  tests.integration:
+      - echo "Running tests for $HELM_CHART_NAME in folder tests/$HELM_CHART_NAME."
+      - cd tests/$HELM_CHART_NAME && ls -la && go test ./...
+  test_integration:
     desc: test helm chart with integrations tests
     cmds:
       - cd tests && go test --tags=integration
