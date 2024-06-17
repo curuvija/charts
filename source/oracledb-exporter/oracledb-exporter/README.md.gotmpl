@@ -1,0 +1,94 @@
+{{ template "chart.header" . }}
+{{ template "chart.description" . }}
+
+## Additional Information
+
+[oracledb-exporter](https://github.com/iamseth/oracledb_exporter) exposes Prometheus metrics based on Oracle SQL queries.
+
+{{ template "chart.maintainersSection" . }}
+
+## Creating secret
+
+You can create secret by enabling ``dbConnection`` in values but this is not recommended unless you use it for test environments
+or you test connection string.
+
+```yaml
+dbConnection:
+  createDbConnectionSecret: true
+  dbDonnectionString: "system/YOUR-PASSWORD-FOR-SYSTEM@//database:1521/DB_SID.DB_DOMAIN"
+```
+
+Better suited option is to create the secret manually by converting connection string to ``base64``:
+
+```bash
+echo -n YOUR_CONNECTION_STRING_GOES_HERE | base64
+```
+
+And create secret like this:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oracledb-exporter-secret
+  namespace: monitoring
+data:
+  datasource: >-
+    c3lzdGVtL21hbmFnZXJALy9lYnMtdi1vcmExNi5lsiuY3JlYWxvZ2l4Lm5ldDoxNTIxL01EQlQxNQ==
+type: Opaque
+```
+Now the last step is to provide secret name in ``existingDbSecretName`` value.
+
+```yaml
+existingDbSecretName: "oracledb-exporter-secret"
+```
+
+Now you can install oracle db exporter.
+
+## Installing the Chart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add curuvija https://curuvija.github.io/helm-charts/
+$ helm repo update
+$ helm install curuvija/oracledb-exporter --version 0.1.0
+```
+
+## Configure Prometheus scraping
+
+If you use Prometheus operator PodMonitor will be created to configure your instance to scrape it.
+
+If you don't use Prometheus operator then you can use this configuration to configure scraping (and disable PodMonitor creation in Helm values):
+
+```yaml
+    additionalScrapeConfigs:
+    - job_name: oracledb-exporter-scrape
+      honor_timestamps: true
+      scrape_interval: 15s
+      scrape_timeout: 10s
+      metrics_path: /metrics
+      scheme: http
+      follow_redirects: true
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app, __meta_kubernetes_pod_labelpresent_app]
+        separator: ;
+        regex: (oracledb-exporter);true
+        replacement: $1
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_container_port_number]
+        separator: ;
+        regex: "9161"
+        replacement: $1
+        action: keep
+      kubernetes_sd_configs:
+      - role: pod
+```
+## Grafana Dashboard
+
+There is an example Grafana dashboard here https://grafana.com/grafana/dashboards/3333.
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

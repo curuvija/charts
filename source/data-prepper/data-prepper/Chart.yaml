@@ -1,0 +1,15 @@
+apiVersion: v2
+name: data-prepper
+description: Opensearch data-prepper helm chart.
+type: application
+version: 1.0.0
+appVersion: "2.4.0" # https://hub.docker.com/r/opensearchproject/data-prepper/tags
+maintainers:
+  - name: 'Milos Curuvija'
+    email: 'curuvija@live.com'
+dependencies:
+  - name: common
+    repository: oci://registry-1.docker.io/bitnamicharts
+    tags:
+      - bitnami-common
+    version: 2.x.x

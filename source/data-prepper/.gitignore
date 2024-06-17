@@ -1,0 +1,4 @@
+.idea
+.cr-release-packages
+data-prepper/charts
+data-prepper/Chart.lock

@@ -1,0 +1,20 @@
+{{- if .Values.prometheus.monitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ template "oracledb-exporter.fullname" . }}
+spec:
+  podMetricsEndpoints:
+  {{- if .Values.prometheus.monitor.interval }}
+    - interval: {{ .Values.prometheus.monitor.interval }}
+  {{- end }}
+{{- if .Values.prometheus.monitor.path }}
+      path: {{ .Values.prometheus.monitor.path }}
+{{- else }}
+      path: /metrics
+{{- end }}
+      targetPort: {{ .Values.service.port }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+{{- end }}
