@@ -5,6 +5,7 @@ package test
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -15,10 +16,14 @@ import (
 	//"github.com/gruntwork-io/terratest/modules/random"
 )
 
+func init() {
+
+}
+
 // TODO: fix tests by adding Promtheus CRDs to the test cluster
 func TestPodDeploysContainerImageHelmTemplateEngine(t *testing.T) {
-	helmChartPath := "../oracledb-exporter/"
-	releaseName := "oracledb-exporter"
+	helmChartPath := os.Getenv("HELM_CHART_PATH")
+	releaseName := os.Getenv("RELEASE_NAME")
 
 	// we are working in default namespace using current kubectl context
 	kubectlOptions := k8s.NewKubectlOptions("", "", "default")

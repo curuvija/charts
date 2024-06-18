@@ -1,9 +1,14 @@
 version: '3'
 
 env:
-  GITHUB_REPO: query-exporter
+  GITHUB_REPO: charts
+  CLUSTER_NAME: test-helm-chart-cluster
 
 tasks:
+  prepare:
+    desc: prepare environment for build stuff
+    cmds:
+      - echo "preparing stuff"
   new:
     desc: creates new helm chart out of starter chart
     requires:
@@ -25,27 +30,48 @@ tasks:
       #- helm template $HELM_CHART_PATH | kubeval
   docs:
     desc: renders docs
+    requires:
+      vars: 
+        - HELM_CHART_PATH
     cmds:
-      - helm-docs $CHART_PATH && cp $CHART_PATH/README.md .
-  test:
+      - helm-docs --chart-search-root $HELM_CHART_PATH --output-file $HELM_CHART_PATH/README.md
+  tests:
     desc: test helm chart
     requires:
       vars: 
-        - HELM_CHART_NAME
+        - HELM_CHART_NAME # name of the helm chart
+        - HELM_CHART_PATH # absolute path to the helm chart
+        - RELEASE_NAME # helm release name
     cmds:
       - echo "Running tests for $HELM_CHART_NAME in folder tests/$HELM_CHART_NAME."
       - cd tests/$HELM_CHART_NAME && ls -la && go test ./...
-  test_integration:
+  tests.integration:
     desc: test helm chart with integrations tests
+    # TODO: this doesn't work
+    vars:
+      HELM_CHART_PATH:
+        sh: echo $(pwd)/source/$HELM_CHART_NAME
+    requires:
+      vars: 
+        - HELM_CHART_NAME # name of the helm chart
+        - HELM_CHART_PATH # absolute path to the helm chart
+        - RELEASE_NAME # helm release name
     cmds:
-      - cd tests && go test --tags=integration
+      - task: cluster.create
+      - task: kubecontext
+      - defer: { task: cluster.delete }
+      - |
+        export HELM_CHART_PATH=$(pwd)/source/$HELM_CHART_NAME
+        export RELEASE_NAME=$HELM_CHART_NAME
+        echo "executing integration tests for helm chart $HELM_CHART_NAME in $HELM_CHART_PATH."
+        cd tests/$HELM_CHART_NAME && go test --tags=integration
   package:
     desc: package helm chart with command like "HELM_CHART_PATH=source/query-exporter/query-exporter task package"
     requires:
       vars: 
         - HELM_CHART_PATH
     cmds:
-      - helm package $HELM_CHART_PATH --destination build/
+      - helm package $HELM_CHART_PATH --destination build/ --destination .cr-release-packages/
       # TODO: - cr package $CHART_PATH --sign
   upload:
     desc: upload packaged helm chart to github repository releases page
@@ -62,10 +88,6 @@ tasks:
       - task: test
       - task: package
       - task: upload
-  templates:
-    desc: renders templates into folder
-    cmds:
-      - helm template default query-exporter/ > tests/rendered_templates/default.yaml
   infer:
     desc: nyx summary
     cmds:
@@ -105,3 +127,38 @@ tasks:
           echo "working on file $($file)"
           helm template source/$HELM_CHART_NAME -n default --values $file > tests/$HELM_CHART_NAME/golden/$(basename $file)
         done
+  cluster.create:
+    desc: creates cluster for the lab
+    requires:
+      vars: 
+        - CLUSTER_NAME
+    cmds:
+    - kind create cluster --config config/cluster.yaml --name $CLUSTER_NAME
+  cluster.delete:
+    desc: deletes the cluster for the lab
+    requires:
+      vars: 
+        - CLUSTER_NAME
+    cmds:
+    - kind delete cluster --name $CLUSTER_NAME
+  kubecontext:
+    desc: select kubernetes kubecontext
+    requires:
+      vars: 
+        - CLUSTER_NAME
+    cmds:
+    - kubectl config use-context kind-$CLUSTER_NAME
+  up:
+    desc: Install lab
+    cmds:
+    - task: cluster.create
+    - task: kubecontext
+    - task: helmfile
+  down:
+    desc: remove lab
+    cmds:
+    - task: cluster.delete
+  helmfile:
+    desc: helmfile
+    cmds:
+      - helmfile -f config/helmfile.yaml sync

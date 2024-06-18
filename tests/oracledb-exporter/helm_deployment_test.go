@@ -2,11 +2,14 @@ package test
 
 import (
 	"fmt"
+	"os"
+
 	//"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	appsv1 "k8s.io/api/apps/v1"
+
 	//corev1 "k8s.io/api/core/v1"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -17,8 +20,8 @@ import (
 func TestDeployment(t *testing.T) {
 	//t.Parallel()
 	// Path to the helm chart we will test
-	helmChartPath := "../oracledb-exporter/"
-	releaseName := "oracledb-exporter"
+	helmChartPath := os.Getenv("HELM_CHART_PATH")
+	releaseName := os.Getenv("RELEASE_NAME")
 	// require.NoError(t, err)
 
 	// Setup the args. For this test, we will set the following input values:

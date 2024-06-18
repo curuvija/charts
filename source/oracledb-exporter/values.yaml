@@ -133,7 +133,7 @@ readinessProbe:
 prometheus:
   monitor:
     # -- enable or disable creation of service monitor
-    enabled: true
+    enabled: false
     # -- add additonal labels to service monitoring
     additionalLabels: {}
     # -- Prometheus scraping interval
