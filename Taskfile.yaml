@@ -75,6 +75,9 @@ tasks:
       # TODO: - cr package $CHART_PATH --sign
   upload:
     desc: upload packaged helm chart to github repository releases page
+    requires:
+      vars:
+        - GH_TOKEN
     cmds:
       - git checkout master
       - cr upload -o curuvija --git-repo $GITHUB_REPO --package-path .cr-release-packages/ --token $GH_TOKEN --release-notes-file CHANGELOG.md
