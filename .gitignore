@@ -1,5 +1,5 @@
-.idea
 .cr-release-packages
+temp/
 TODO.md
 build
-node_modules
+.cr-release-packages
