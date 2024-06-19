@@ -130,17 +130,3 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
----
-# Source: oracledb-exporter/templates/podmonitor.yaml
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  name: release-name-oracledb-exporter
-spec:
-  podMetricsEndpoints:
-    - interval: 15s
-      path: /metrics
-      targetPort: 9161
-  selector:
-    matchLabels:
-      app: release-name
