@@ -140,6 +140,7 @@ tasks:
     desc: display git diff
     cmds:
       - git --no-pager diff
+      - echo "this git tag will be created"
   pr:
     desc: display changes imitating PR/MR
     prompt: By approving these changes you're going to publish release... Do you want to continue?
@@ -208,33 +209,46 @@ tasks:
   kube-score:
     desc: Run kube-score on templates
     cmds:
-      - helm template $CHART_PATH | docker run -i zegl/kube-score:latest score -
+      - helm template $SOURCE_DIR/$HELM_CHART_NAME | docker run -i zegl/kube-score:latest score -
   kube-linter:
     desc: run kube-linter
     cmds:
-      - helm template $CHART_PATH | docker run -i stackrox/kube-linter:latest lint -
+      - helm template $SOURCE_DIR/$HELM_CHART_NAME | docker run --pull missing -i stackrox/kube-linter:latest lint -
   polaris:
     desc: run polaris against helm chart, check https://github.com/FairwindsOps/polaris/blob/master/examples/config.yaml for config options
     cmds:
-      - task: templates
-      - docker run -t -v .:/path quay.io/fairwinds/polaris:latest polaris audit --only-show-failed-tests --format=pretty --audit-path /path/tests/rendered_templates
+      - task: golden
+      - docker run -t -v $(pwd)/tests/$HELM_CHART_NAME/golden:/templates quay.io/fairwinds/polaris:latest polaris audit --only-show-failed-tests --format=pretty --audit-path /templates
   trivy:
     desc: run trivy against helm chart
     cmds:
-      - docker run -t -v .:/path aquasec/trivy:latest config /path/$CHART_PATH
+      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME:/chart aquasec/trivy:latest config /chart
   kubesec:
     desc: scan with https://kubesec.io/
     cmds:
-      - helm template $CHART_PATH | docker run -i kubesec/kubesec:latest scan /dev/stdin
+      - helm template $SOURCE_DIR/$HELM_CHART_NAME | docker run -i kubesec/kubesec:latest scan /dev/stdin
   kics:
     desc: run kics on helm chart
     cmds:
-      - docker run -t -v .:/path checkmarx/kics:latest scan -p /path/$CHART_PATH
+      - docker run -t -v $SOURCE_DIR/$HELM_CHART_NAME:/chart checkmarx/kics:latest scan -p /chart/$HELM_CHART_NAME
+  kubeaudit:
+    desc: kubeaudit scan manifests
+    cmds:
+    # IMPORTANT: kubeaudit docker image latest comes only for arm64 https://hub.docker.com/r/shopify/kubeaudit/tags so you need to use binary release instead
+    #- docker run -t -v $(pwd)/tests/$HELM_CHART_NAME/golden:/templates shopify/kubeaudit:latest all -f /templates
+    # TODO: check if you can use nix-shell or download binaries
+    #- wget -q https://github.com/Shopify/kubeaudit/releases/download/v0.22.1/kubeaudit_0.22.1_linux_amd64.tar.gz && tar -zxvf kubeaudit_0.22.1_linux_amd64.tar.gz kubeaudit && mv kubeaudit /usr/local/bin/
+    #- task: golden
+    #- kubeaudit all -f tests/$HELM_CHART_NAME/golden
   # TODO: check https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Helm.md
   checkov:
     desc: run checkouv on helm chart
     cmds:
-      - docker run -t -v .:/path bridgecrew/checkov:latest -d /path/$CHART_PATH
+      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME:/chart bridgecrew/checkov:latest -d /chart
+  cnspec:
+    desc: run cnspec on golden files
+    cmds:
+      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME:/templates -v $(pwd)/config/cnspec:/policies mondoo/cnspec scan k8s /templates --policy-bundle /policies/mondoo-kubernetes-best-practices.mql.yaml
   hooks:
     desc: runs all pre-commit hooks on demand
     cmds:
