@@ -220,11 +220,24 @@ tasks:
     desc: run kics on helm chart
     cmds:
       - docker run -t -v $SOURCE_DIR/$HELM_CHART_NAME:/chart checkmarx/kics:latest scan -p /chart/$HELM_CHART_NAME
+  kubeaudit:
+    desc: kubeaudit scan manifests
+    cmds:
+    # IMPORTANT: kubeaudit docker image latest comes only for arm64 https://hub.docker.com/r/shopify/kubeaudit/tags so you need to use binary release instead
+    #- docker run -t -v $(pwd)/tests/$HELM_CHART_NAME/golden:/templates shopify/kubeaudit:latest all -f /templates
+    # TODO: check if you can use nix-shell or download binaries
+    #- wget -q https://github.com/Shopify/kubeaudit/releases/download/v0.22.1/kubeaudit_0.22.1_linux_amd64.tar.gz && tar -zxvf kubeaudit_0.22.1_linux_amd64.tar.gz kubeaudit && mv kubeaudit /usr/local/bin/
+    #- task: golden
+    #- kubeaudit all -f tests/$HELM_CHART_NAME/golden
   # TODO: check https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Helm.md
   checkov:
     desc: run checkouv on helm chart
     cmds:
       - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME:/chart bridgecrew/checkov:latest -d /chart
+  cnspec:
+    desc: run cnspec on golden files
+    cmds:
+      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME:/templates -v $(pwd)/config/cnspec:/policies mondoo/cnspec scan k8s /templates --policy-bundle /policies/mondoo-kubernetes-best-practices.mql.yaml
   hooks:
     desc: runs all pre-commit hooks on demand
     cmds:
