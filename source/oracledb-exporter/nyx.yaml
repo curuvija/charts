@@ -1,0 +1,9 @@
+releaseAssets:
+  chart:
+    description: "OracleDB Exporter Helm Chart version {{version}}"
+    fileName: "oracledb-exporter-{{version}}.tgz"
+    path: "build/oracledb-exporter-{{version}}.tgz"
+    type: "application/octet-stream"
+substitutions:
+  enabled:
+    - helm_version # sets the version in Chart.yaml
