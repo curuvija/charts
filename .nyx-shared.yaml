@@ -28,18 +28,21 @@ releaseTypes:
   items:
     mainline:
       description: "{{#fileContent}}CHANGELOG.md{{/fileContent}}"
+      assets:
+        - chart
       gitCommit: true
       #publishDraft: true
-      #filterTags: "^({{configuration.releasePrefix}})?([0-9]\\d*)\\.([0-9]\\d*)\\.([0-9]\\d*)$"
+      filterTags: "^()?([0-9]\\d*)\\.([0-9]\\d*)\\.([0-9]\\d*)(-(main|master)(\\.([0-9]\\d*))?)$"
       gitPush: "true"
       gitTag: "true"
       #gitTagForce: "true"
       #gitPushForce: "true"
-      matchBranches: "^(master)$" # publish only from master branch
+      matchBranches: "^(master|main)$" # publish only from master branch
       # matchEnvironmentVariables:
       #   CI: "^true$"                 # only match this release type when running on CI servers
       #matchWorkspaceStatus: "CLEAN"  # only match this release type when the repository is clean
       publish: "true"
+# TODO: check if this is really needed
     develop:
       description: "{{#fileContent}}CHANGELOG.md{{/fileContent}}"
       assets:
@@ -67,9 +70,17 @@ git:
       password: "{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}"
 
 dryRun: false # use this together with verbosity and check logs in terminal
-verbosity: "warning" # https://mooltiverse.github.io/nyx/guide/user/configuration-reference/global-options/#verbosity
-# TODO: this one executes on all charts, figure out how to replace on the needed chart
-#substitutions:
-#  enabled:
-#    - helm_version # sets the version in Chart.yaml
+verbosity: "trace" # https://mooltiverse.github.io/nyx/guide/user/configuration-reference/global-options/#verbosity
+# TODO: this one executes on all charts, figure out how to replace on the needed chart and check https://github.com/mooltiverse/nyx/issues/293
+substitutions:
+  enabled:
+    #- helm_version # sets the version in Chart.yaml
+    - chartyaml
+  items:
+    chartyaml:
+      #files: "**/source/{{#environmentVariable}}HELM_CHART_NAME{{/environmentVariable}}/Chart.yaml"
+      # TODO: it doesn't resolve environment variable
+      files: "**/source/oracledb-exporter/Chart.yaml"
+      match: "version:"
+      replace: "version: 0.1.1"
 stateFile: "build/.nyx-state.json"

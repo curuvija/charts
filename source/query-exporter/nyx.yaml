@@ -4,6 +4,3 @@ releaseAssets:
     fileName: "query-exporter-{{version}}.tgz"
     path: "build/query-exporter-{{version}}.tgz"
     type: "application/octet-stream"
-substitutions:
-  enabled:
-    - helm_version # sets the version in Chart.yaml
