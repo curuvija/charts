@@ -5,22 +5,7 @@ env:
   CLUSTER_NAME: test-helm-chart-cluster
   SOURCE_DIR: source
 
-dotenv:
-  - build/.env
-
 tasks:
-  prepare:
-    desc: prepare environment for build stuff
-    requires:
-      vars: 
-        - HELM_CHART_NAME # name of the helm chart
-        - HELM_CHART_PATH # absolute path to the helm chart
-        - RELEASE_NAME # helm release name    
-    cmds:
-      - rm -f build/.env
-      - echo HELM_CHART_NAME={{.HELM_CHART_NAME}} >> build/.env
-      - echo HELM_CHART_PATH={{.HELM_CHART_PATH}} >> build/.env
-      - echo RELEASE_NAME={{.RELEASE_NAME}} >> build/.env
   new:
     desc: creates new helm chart out of starter chart
     requires:
