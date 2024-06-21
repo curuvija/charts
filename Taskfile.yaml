@@ -101,8 +101,9 @@ tasks:
   infer:
     desc: nyx summary
     cmds:
-      - nyx --summary infer
-      - nyx infer --summary-file=build/nyx_summary
+      - nyx infer --summary --release-prefix=$HELM_CHART_NAME- #--bump=minor
+      #- nyx --summary infer
+      #- nyx infer --summary-file=build/nyx_summary
       #- docker run -it --rm -v .:/project mooltiverse/nyx:latest --summary infer
   mark:
     desc: mark nyx
@@ -120,7 +121,7 @@ tasks:
   state:
     desc: build nyx state file
     cmds:
-      - nyx --state-file=build/nyx-state.json infer
+      - nyx --state-file=build/nyx-state.json infer --release-prefix=$HELM_CHART_NAME-
   version:
     desc: version helm chart
     cmds:
