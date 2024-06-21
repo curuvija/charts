@@ -112,8 +112,9 @@ tasks:
   infer:
     desc: nyx summary
     cmds:
-      - nyx --summary infer
-      - nyx infer --summary-file=build/nyx_summary
+      - nyx infer --summary --release-prefix=$HELM_CHART_NAME- #--bump=minor
+      #- nyx --summary infer
+      #- nyx infer --summary-file=build/nyx_summary
       #- docker run -it --rm -v .:/project mooltiverse/nyx:latest --summary infer
   mark:
     desc: mark nyx
@@ -131,7 +132,7 @@ tasks:
   state:
     desc: build nyx state file
     cmds:
-      - nyx --state-file=build/nyx-state.json infer
+      - nyx --state-file=build/nyx-state.json infer --release-prefix=$HELM_CHART_NAME-
   version:
     desc: version helm chart
     cmds:
@@ -241,6 +242,10 @@ tasks:
     #- task: golden
     #- kubeaudit all -f tests/$HELM_CHART_NAME/golden
   # TODO: check https://github.com/bridgecrewio/checkov/blob/main/docs/7.Scan%20Examples/Helm.md
+  kubescape:
+    desc: run kubescape scan (check https://github.com/kubescape/kubescape/blob/master/docs/getting-started.md#run-your-first-scan)
+    cmds:
+      - docker run -t -v $(pwd)/tests/$HELM_CHART_NAME/golden:/templates --name kubescape bitnami/kubescape:latest scan /templates
   checkov:
     desc: run checkouv on helm chart
     cmds:
@@ -249,6 +254,27 @@ tasks:
     desc: run cnspec on golden files
     cmds:
       - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME:/templates -v $(pwd)/config/cnspec:/policies mondoo/cnspec scan k8s /templates --policy-bundle /policies/mondoo-kubernetes-best-practices.mql.yaml
+  pluto:
+    desc: detect deprecated api versions
+    cmds:
+    - pluto detect tests/$HELM_CHART_NAME/golden
+  conftest:
+    desc: run conftest
+    cmds:
+    - conftest test --policy config/conftest/ tests/$HELM_CHART_NAME/golden
+  kubeconform:
+    desc: run kubeconform
+    cmds:
+    - kubeconform tests/$HELM_CHART_NAME/golden
+  kyverno:
+    desc: kyverno scan
+    cmds:
+    #- kyverno apply config/kyverno/ --resource=tests/$HELM_CHART_NAME/golden
+    - docker run -e KYVERNO_NAMESPACE="kyverno-system" -e KYVERNO_SERVICEACCOUNT_NAME="nobody" -v $(pwd)/config/kyverno:/policies -v $(pwd)/tests/$HELM_CHART_NAME/golden:/templates ghcr.io/kyverno/kyverno apply /policies --resource=/templates
+  terrascan:
+    desc: scanning kubernetes yaml files
+    cmds:
+      - docker run -v $(pwd)/tests/$HELM_CHART_NAME/golden:/templates accurics/terrascan:latest scan -i k8s --iac-dir /templates
   hooks:
     desc: runs all pre-commit hooks on demand
     cmds:
