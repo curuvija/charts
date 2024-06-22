@@ -97,7 +97,7 @@ tasks:
   infer:
     desc: nyx summary
     cmds:
-      - nyx infer --summary --release-prefix=$HELM_CHART_NAME- --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml
+      - nyx infer --summary --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml #--bump=minor #--release-prefix=$HELM_CHART_NAME-
   mark:
     desc: mark nyx
     cmds:
@@ -105,7 +105,7 @@ tasks:
   make:
     desc: make nyx
     cmds:
-      - nyx make --release-prefix=$HELM_CHART_NAME- --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml #--substitutions-chartyaml-files=**$SOURCE_DIR/$HELM_CHART_NAME/Chart.yaml
+      - nyx make --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml #--bump=minor #--release-prefix=$HELM_CHART_NAME- #--substitutions-chartyaml-files=**$SOURCE_DIR/$HELM_CHART_NAME/Chart.yaml
       #- task: appVersion
   publish:
     desc: publish nyx

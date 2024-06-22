@@ -1,15 +1,15 @@
 releaseAssets:
   chart:
-    description: "Query Exporter Helm Chart version {{version}}"
-    fileName: "query-exporter-{{version}}.tgz"
-    path: "build/query-exporter-{{version}}.tgz"
+    description: "Data prepper Helm Chart version {{version}}"
+    fileName: "data-prepper-{{version}}.tgz"
+    path: "build/data-prepper-{{version}}.tgz"
     type: "application/octet-stream"
 substitutions:
   enabled:
     - chartyaml
   items:
     chartyaml:
-      files: "**/source/query-exporter/Chart.yaml"
+      files: "**/source/data-prepper/Chart.yaml"
       # match should work like the one bellow
       #match: "version: 1.0.0"
       match: "version: .*" # not the best one but it will work for now
@@ -18,4 +18,4 @@ releaseTypes:
   items:
     mainline:
       gitTagNames:
-        - "query-exporter-{{version}}"
+        - "data-prepper-{{version}}"

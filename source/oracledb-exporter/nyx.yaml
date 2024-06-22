@@ -4,3 +4,18 @@ releaseAssets:
     fileName: "oracledb-exporter-{{version}}.tgz"
     path: "build/oracledb-exporter-{{version}}.tgz"
     type: "application/octet-stream"
+substitutions:
+  enabled:
+    - chartyaml
+  items:
+    chartyaml:
+      files: "**/source/oracledb-exporter/Chart.yaml"
+      # match should work like the one bellow
+      #match: "version: 1.0.0"
+      match: "version: .*" # not the best one but it will work for now
+      replace: 'version: "{{#capture expression="^[\D]*(?<semver>(?:\d+\.)?(?:\d+\.)?(?:\*|\d+))$" group="semver"}}{{version}}{{/capture}}"'
+releaseTypes:
+  items:
+    mainline:
+      gitTagNames:
+        - "oracledb-exporter-{{version}}"
