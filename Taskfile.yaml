@@ -101,16 +101,23 @@ tasks:
   mark:
     desc: mark nyx
     cmds:
-      - nyx mark
+      - nyx mark --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml
   make:
     desc: make nyx
     cmds:
       - nyx make --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml #--bump=minor #--release-prefix=$HELM_CHART_NAME- #--substitutions-chartyaml-files=**$SOURCE_DIR/$HELM_CHART_NAME/Chart.yaml
-      #- task: appVersion
+      - task: appVersion
   publish:
     desc: publish nyx
     cmds:
-      - nyx publish
+      - nyx publish --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml
+  publish-dry-run:
+    desc: publish nyx dry run (check the log printed to the console)
+    cmds:
+      - nyx infer --summary --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml --dry-run --debug
+      - nyx make --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml --dry-run --debug
+      - nyx mark --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml --dry-run --debug
+      - nyx publish --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml --dry-run  --debug #--trace
   version:
     desc: version helm chart
     cmds:
