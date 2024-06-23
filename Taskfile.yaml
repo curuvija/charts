@@ -4,6 +4,7 @@ env:
   GITHUB_REPO: charts
   CLUSTER_NAME: test-helm-chart-cluster
   SOURCE_DIR: source
+  NYX_OPTIONS: "--dry-run --debug" # add extra options to nyx command like if you want to manually bump the version for example: 'export NYX_OPTIONS="--bump=minor --dry-run --debug")'
 
 tasks:
   new:
@@ -84,60 +85,58 @@ tasks:
     cmds:
       - task: lint
       - task: golden
+      - task: infer
+      - task: make
       - task: tests
       - task: docs
-      - task: appVersion
       - task: package
-      - task: version
       - task: diff
-      - task: pr #--yes # check https://taskfile.dev/usage/#warning-prompts
-      - task: commit
+      - task: mark
+      - task: publish
       - task: upload
       # TODO: check if you can have a webhook event created when PR is approved so that you can release the version to github pages https://stackoverflow.com/questions/56706424/github-api-does-a-webhook-fire-on-a-pull-request-approval-event
   infer:
     desc: nyx summary
+    requires:
+      vars:
+        - HELM_CHART_NAME
     cmds:
-      - nyx infer --summary --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml #--bump=minor #--release-prefix=$HELM_CHART_NAME-
-  mark:
-    desc: mark nyx
-    cmds:
-      - nyx mark --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml
+      - nyx infer --summary --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml $NYX_OPTIONS
   make:
     desc: make nyx
     cmds:
-      - nyx make --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml #--bump=minor #--release-prefix=$HELM_CHART_NAME- #--substitutions-chartyaml-files=**$SOURCE_DIR/$HELM_CHART_NAME/Chart.yaml
+      - nyx make --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml $NYX_OPTIONS
       - task: appVersion
+  mark:
+    desc: mark nyx
+    cmds:
+      - nyx mark --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml $NYX_OPTIONS
   publish:
     desc: publish nyx
+    prompt: Do you really want to publish {{.HELM_CHART_NAME}} version {{.HELM_CHART_VERSION}}?
+    vars:
+      HELM_CHART_VERSION:
+        sh: cat build/.nyx-state.json | jq -r .version
     cmds:
-      - nyx publish --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml
+      - nyx publish --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml $NYX_OPTIONS
   publish-dry-run:
     desc: publish nyx dry run (check the log printed to the console)
+    prompt: Do you really want to publish {{.HELM_CHART_NAME}} version {{.HELM_CHART_VERSION}}?
+    deps:
+      - infer
+    vars:
+      HELM_CHART_VERSION:
+        sh: cat build/.nyx-state.json | jq -r .version
     cmds:
-      - nyx infer --summary --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml --dry-run --debug
-      - nyx make --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml --dry-run --debug
-      - nyx mark --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml --dry-run --debug
-      - nyx publish --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml --dry-run  --debug #--trace
-  version:
-    desc: version helm chart
-    cmds:
-      - echo "versioning helm chart"
+      - echo "Publishing Helm chart {{.HELM_CHART_NAME}} version {{.HELM_CHART_VERSION}}."
+      - nyx make --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml $NYX_OPTIONS
+      - nyx mark --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml $NYX_OPTIONS
+      - nyx publish --configuration-file=$SOURCE_DIR/$HELM_CHART_NAME/nyx.yaml $NYX_OPTIONS
   diff:
     desc: display git diff
     cmds:
       - git --no-pager diff
       - echo "this git tag will be created"
-  pr:
-    desc: display changes imitating PR/MR
-    prompt: By approving these changes you're going to publish release... Do you want to continue?
-    cmds:
-      - echo "creating release tag"
-      - echo "commiting and creating PR"
-  commit:
-    desc: commit 
-    cmds:
-      - echo "creating release tag"
-      - echo "commiting and creating PR (or even approve)"
   appVersion:
     desc: replaces appVersion in Helm chart
     requires:

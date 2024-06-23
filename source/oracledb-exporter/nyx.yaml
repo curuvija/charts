@@ -1,9 +1,12 @@
+initialVersion: "1.0.0"
 releaseAssets:
   chart:
     description: "**/source/{{#environmentVariable}}HELM_CHART_NAME{{/environmentVariable}}/Chart.yaml"
     fileName: "oracledb-exporter-{{version}}.tgz"
     path: "build/oracledb-exporter-{{version}}.tgz"
     type: "application/octet-stream"
+changelog:
+  path: "source/oracledb-exporter/CHANGELOG.md"
 substitutions:
   enabled:
     - chartyaml
