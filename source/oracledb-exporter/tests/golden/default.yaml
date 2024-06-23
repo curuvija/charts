@@ -5,12 +5,12 @@ kind: ServiceAccount
 metadata:
   name: release-name-oracledb-exporter
   labels:
-    helm.sh/chart: oracledb-exporter-1.0.0
+    helm.sh/chart: oracledb-exporter-1.1.0
     app.kubernetes.io/name: oracledb-exporter
     app.kubernetes.io/instance: release-name
     app: release-name
     release: release-name
-    app.kubernetes.io/version: "0.5.1"
+    app.kubernetes.io/version: "0.6.0"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: oracledb-exporter/templates/configmap.yaml
@@ -31,12 +31,12 @@ kind: Service
 metadata:
   name: release-name-oracledb-exporter
   labels:
-    helm.sh/chart: oracledb-exporter-1.0.0
+    helm.sh/chart: oracledb-exporter-1.1.0
     app.kubernetes.io/name: oracledb-exporter
     app.kubernetes.io/instance: release-name
     app: release-name
     release: release-name
-    app.kubernetes.io/version: "0.5.1"
+    app.kubernetes.io/version: "0.6.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -57,12 +57,12 @@ kind: Deployment
 metadata:
   name: release-name-oracledb-exporter
   labels:
-    helm.sh/chart: oracledb-exporter-1.0.0
+    helm.sh/chart: oracledb-exporter-1.1.0
     app.kubernetes.io/name: oracledb-exporter
     app.kubernetes.io/instance: release-name
     app: release-name
     release: release-name
-    app.kubernetes.io/version: "0.5.1"
+    app.kubernetes.io/version: "0.6.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -98,7 +98,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "ghcr.io/iamseth/oracledb_exporter:0.5.1"
+          image: "ghcr.io/iamseth/oracledb_exporter:0.6.0"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9161

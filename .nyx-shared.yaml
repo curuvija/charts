@@ -1,7 +1,10 @@
 preset: "extended"
+# TODO: check how this work https://mooltiverse.github.io/nyx/guide/user/configuration-reference/commit-message-conventions/#commit-message-convention-definition
 commitMessageConventions:
   enabled:
     - conventionalCommits
+  # conventionalCommits:
+  #   expression: (?m)^(?<type>[a-zA-Z0-9_]+)(\((?<scope>[a-z ]+)\))?(!)?:( (?<title>.+))$(?s).*
 services:
   github:
     type: "GITHUB"
@@ -13,8 +16,8 @@ changelog:
   path: "build/CHANGELOG.md"
   template: "config/CHANGELOG.tpl"
   sections:
-  "Added": "^feat$"
-  "Fixed": "^fix$"
+    "Added": ^feat$
+    "Fixed": "^fix$"
   substitutions:
     "(?m)#([0-9]+)(?s)": "[#%s](https://github.com/curuvija/charts/issues/%s)"
 releaseTypes:
@@ -56,9 +59,7 @@ releaseTypes:
       gitTag: "true"
       gitTagForce: "true"
       gitPushForce: "true"
-      gitTagNames:
-        - ""
-      #matchBranches: "^(develop|development|integration|latest)$"
+      matchBranches: "^(develop|development|integration|latest)$"
       #matchWorkspaceStatus: "CLEAN"
       publish: "true"
       publishPreRelease: "true"
@@ -70,17 +71,5 @@ git:
       password: "{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}"
 
 dryRun: false # use this together with verbosity and check logs in terminal
-verbosity: "trace" # https://mooltiverse.github.io/nyx/guide/user/configuration-reference/global-options/#verbosity
-# TODO: this one executes on all charts, figure out how to replace on the needed chart and check https://github.com/mooltiverse/nyx/issues/293
-# substitutions:
-#   enabled:
-#     #- helm_version # sets the version in Chart.yaml
-#     - chartyaml
-#   items:
-#     chartyaml:
-#       #files: "**/source/{{#environmentVariable}}HELM_CHART_NAME{{/environmentVariable}}/Chart.yaml"
-#       # TODO: it doesn't resolve environment variable
-#       files: "**/source/oracledb-exporter/Chart.yaml"
-#       match: "version:"
-#       replace: "version: 0.1.1"
+verbosity: "info" # https://mooltiverse.github.io/nyx/guide/user/configuration-reference/global-options/#verbosity
 stateFile: "build/.nyx-state.json"
