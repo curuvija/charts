@@ -5,5 +5,10 @@ type: application
 version: 0.1.0
 appVersion: "1.16.0"
 maintainers:
+maintainers:
   - name: 'Milos Curuvija'
     email: 'curuvija@live.com'
+annotations:
+  artifacthub.io/maintainers: |
+    - name: "Milos Curuvija"
+      email: curuvija@live.com
