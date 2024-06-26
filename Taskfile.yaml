@@ -13,7 +13,7 @@ tasks:
       vars:
         - HELM_CHART_NAME
     cmds:
-      - helm create $HELM_CHART_NAME --starter $(pwd)/$SOURCE_DIR/starter && mv $HELM_CHART_NAME $SOURCE_DIR
+      - helm create $HELM_CHART_NAME --starter $(pwd)/$SOURCE_DIR/chart/starter && mv $HELM_CHART_NAME $SOURCE_DIR
   commitlint:
     desc: run commitlint
     cmds:
@@ -24,15 +24,15 @@ tasks:
       vars: 
         - HELM_CHART_NAME
     cmds:
-      - helm lint $SOURCE_DIR/$HELM_CHART_NAME
-      #- helm template $SOURCE_DIR/$HELM_CHART_NAME | kubeval
+      - helm lint $SOURCE_DIR/$HELM_CHART_NAME/chart/chart
+      #- helm template $SOURCE_DIR/$HELM_CHART_NAME/chart | kubeval
   docs:
     desc: renders docs
     requires:
       vars: 
         - HELM_CHART_NAME
     cmds:
-      - helm-docs --chart-search-root $SOURCE_DIR/$HELM_CHART_NAME/
+      - helm-docs --chart-search-root $SOURCE_DIR/$HELM_CHART_NAME/chart/
   tests:
     desc: test helm chart
     requires:
@@ -41,13 +41,13 @@ tasks:
         - RELEASE_NAME # helm release name
     cmds:
       - echo "Running tests for $HELM_CHART_NAME in folder tests/$HELM_CHART_NAME."
-      - cd tests/$HELM_CHART_NAME && ls -la && go test ./...
+      - cd source/$HELM_CHART_NAME/tests && go test ./...
   tests.integration:
     desc: test helm chart with integrations tests
     # TODO: this doesn't work
     vars:
       HELM_CHART_PATH:
-        sh: echo $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME
+        sh: echo $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME/chart
     requires:
       vars: 
         - HELM_CHART_NAME # name of the helm chart
@@ -58,17 +58,17 @@ tasks:
       - task: kubecontext
       - defer: { task: cluster.delete }
       - |
-        export HELM_CHART_PATH=$(pwd)/$SOURCE_DIR/$HELM_CHART_NAME
+        export HELM_CHART_PATH=$(pwd)/$SOURCE_DIR/$HELM_CHART_NAME/chart
         export RELEASE_NAME=$HELM_CHART_NAME
         echo "executing integration tests for helm chart $HELM_CHART_NAME in $HELM_CHART_PATH."
-        cd tests/$HELM_CHART_NAME && go test --tags=integration
+        cd source/$HELM_CHART_NAME/tests && go test --tags=integration
   package:
-    desc: package helm chart with command like "HELM_CHART_PATH=$SOURCE_DIR/query-exporter/query-exporter task package"
+    desc: package helm chart
     requires:
       vars: 
         - HELM_CHART_NAME
     cmds:
-      - helm package $SOURCE_DIR/$HELM_CHART_NAME --destination build/ --destination .cr-release-packages/
+      - helm package $SOURCE_DIR/$HELM_CHART_NAME/chart --destination build/ --destination .cr-release-packages/
       # TODO: - cr package $CHART_PATH --sign
   upload:
     desc: upload packaged helm chart to github repository releases page
@@ -78,8 +78,8 @@ tasks:
         - GH_TOKEN
     cmds:
       - git checkout gh-pages
-      - cr upload -o curuvija --git-repo $GITHUB_REPO --package-path .cr-release-packages/ --token $GH_TOKEN --release-notes-file $SOURCE_DIR/$HELM_CHART_NAME/CHANGELOG.md
-      - cr upload -o curuvija --git-repo $GITHUB_REPO --package-path .cr-release-packages/ --token $GH_TOKEN --release-notes-file $SOURCE_DIR/$HELM_CHART_NAME/CHANGELOG.md
+      - cr upload -o curuvija --git-repo $GITHUB_REPO --package-path .cr-release-packages/ --token $GH_TOKEN --release-notes-file $SOURCE_DIR/$HELM_CHART_NAME/chart/CHANGELOG.md
+      - cr upload -o curuvija --git-repo $GITHUB_REPO --package-path .cr-release-packages/ --token $GH_TOKEN --release-notes-file $SOURCE_DIR/$HELM_CHART_NAME/chart/CHANGELOG.md
   release:
     desc: release helm chart
     cmds:
@@ -143,7 +143,7 @@ tasks:
       vars:
         - HELM_CHART_NAME
     cmds:
-      - export APP_VERSION=$(cat $SOURCE_DIR/$HELM_CHART_NAME/values.yaml | yq .image.tag) && yq e -i '.appVersion = env(APP_VERSION)' $SOURCE_DIR/$HELM_CHART_NAME/Chart.yaml
+      - export APP_VERSION=$(cat $SOURCE_DIR/$HELM_CHART_NAME/chart/values.yaml | yq .image.tag) && yq e -i '.appVersion = env(APP_VERSION)' $SOURCE_DIR/$HELM_CHART_NAME/chart/Chart.yaml
   golden:
     desc: update golden files
     requires:
@@ -152,9 +152,9 @@ tasks:
     cmds:
       - |
         echo "working on chart $HELM_CHART_NAME"
-        for file in tests/$HELM_CHART_NAME/values/*; do
+        for file in source/$HELM_CHART_NAME/tests/values/*; do
           echo "working on file $($file)"
-          helm template $SOURCE_DIR/$HELM_CHART_NAME -n default --values $file > tests/$HELM_CHART_NAME/golden/$(basename $file)
+          helm template $SOURCE_DIR/$HELM_CHART_NAME/chart -n default --values $file > source/$HELM_CHART_NAME/tests/golden/$(basename $file)
         done
   cluster.create:
     desc: creates cluster for the lab
@@ -194,11 +194,11 @@ tasks:
   kube-score:
     desc: Run kube-score on templates
     cmds:
-      - helm template $SOURCE_DIR/$HELM_CHART_NAME | docker run -i zegl/kube-score:latest score -
+      - helm template $SOURCE_DIR/$HELM_CHART_NAME/chart | docker run -i zegl/kube-score:latest score -
   kube-linter:
     desc: run kube-linter
     cmds:
-      - helm template $SOURCE_DIR/$HELM_CHART_NAME | docker run --pull missing -i stackrox/kube-linter:latest lint -
+      - helm template $SOURCE_DIR/$HELM_CHART_NAME/chart | docker run --pull missing -i stackrox/kube-linter:latest lint -
   polaris:
     desc: run polaris against helm chart, check https://github.com/FairwindsOps/polaris/blob/master/examples/config.yaml for config options
     cmds:
@@ -207,15 +207,15 @@ tasks:
   trivy:
     desc: run trivy against helm chart
     cmds:
-      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME:/chart aquasec/trivy:latest config /chart
+      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME/chart:/chart aquasec/trivy:latest config /chart
   kubesec:
     desc: scan with https://kubesec.io/
     cmds:
-      - helm template $SOURCE_DIR/$HELM_CHART_NAME | docker run -i kubesec/kubesec:latest scan /dev/stdin
+      - helm template $SOURCE_DIR/$HELM_CHART_NAME/chart | docker run -i kubesec/kubesec:latest scan /dev/stdin
   kics:
     desc: run kics on helm chart
     cmds:
-      - docker run -t -v $SOURCE_DIR/$HELM_CHART_NAME:/chart checkmarx/kics:latest scan -p /chart/$HELM_CHART_NAME
+      - docker run -t -v $SOURCE_DIR/$HELM_CHART_NAME/chart:/chart checkmarx/kics:latest scan -p /chart/$HELM_CHART_NAME
   kubeaudit:
     desc: kubeaudit scan manifests
     cmds:
@@ -233,11 +233,11 @@ tasks:
   checkov:
     desc: run checkouv on helm chart
     cmds:
-      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME:/chart bridgecrew/checkov:latest -d /chart
+      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME/chart:/chart bridgecrew/checkov:latest -d /chart
   cnspec:
     desc: run cnspec on golden files
     cmds:
-      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME:/templates -v $(pwd)/config/cnspec:/policies mondoo/cnspec scan k8s /templates --policy-bundle /policies/mondoo-kubernetes-best-practices.mql.yaml
+      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME/chart:/templates -v $(pwd)/config/cnspec:/policies mondoo/cnspec scan k8s /templates --policy-bundle /policies/mondoo-kubernetes-best-practices.mql.yaml
   pluto:
     desc: detect deprecated api versions
     cmds:

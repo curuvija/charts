@@ -6,13 +6,13 @@ releaseAssets:
     path: "build/oracledb-exporter-{{version}}.tgz"
     type: "application/octet-stream"
 changelog:
-  path: "source/oracledb-exporter/CHANGELOG.md"
+  path: "source/oracledb-exporter/chart/CHANGELOG.md"
 substitutions:
   enabled:
     - chartyaml
   items:
     chartyaml:
-      files: "**/source/oracledb-exporter/Chart.yaml"
+      files: "**/source/oracledb-exporter/chart/Chart.yaml"
       # match should work like the one bellow
       #match: "version: 1.0.0"
       match: "version: .*" # not the best one but it will work for now
