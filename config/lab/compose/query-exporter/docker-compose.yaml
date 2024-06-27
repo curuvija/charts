@@ -1,0 +1,31 @@
+services:
+  query-exporter:
+    #command: "query-exporter /config/config.yaml"
+    image: adonato/query-exporter:2.10.0
+    container_name: query-exporter
+    ports:
+      - "9560:9560"
+    volumes:
+      - ./config.yaml:/config/config.yaml
+    networks:
+      - query-exporter-lab
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prom_data:/prometheus
+    networks:
+      - query-exporter-lab
+
+networks:
+  query-exporter-lab:
+    name: query-exporter-lab
+
+volumes:
+  prom_data:

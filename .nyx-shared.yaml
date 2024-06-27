@@ -35,7 +35,6 @@ releaseTypes:
         - chart
       gitCommit: true
       #publishDraft: true
-      filterTags: "^()?([0-9]\\d*)\\.([0-9]\\d*)\\.([0-9]\\d*)(-(main|master)(\\.([0-9]\\d*))?)$"
       gitPush: "true"
       gitTag: "true"
       #gitTagForce: "true"

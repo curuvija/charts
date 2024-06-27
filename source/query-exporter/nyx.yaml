@@ -1,15 +1,18 @@
+initialVersion: "2.1.0"
 releaseAssets:
   chart:
-    description: "Query Exporter Helm Chart version {{version}}"
+    description: "Query Exporter Helm Chart Export Prometheus metrics from SQL queries"
     fileName: "query-exporter-{{version}}.tgz"
     path: "build/query-exporter-{{version}}.tgz"
     type: "application/octet-stream"
+changelog:
+  path: "source/query-exporter/chart/CHANGELOG.md"
 substitutions:
   enabled:
     - chartyaml
   items:
     chartyaml:
-      files: "**/source/query-exporter/Chart.yaml"
+      files: "**/source/query-exporter/chart/Chart.yaml"
       # match should work like the one bellow
       #match: "version: 1.0.0"
       match: "version: .*" # not the best one but it will work for now
@@ -17,5 +20,6 @@ substitutions:
 releaseTypes:
   items:
     mainline:
+      filterTags: "^query-exporter-([0-9]\\d*)\\.([0-9]\\d*)\\.([0-9]\\d*)$"
       gitTagNames:
         - "query-exporter-{{version}}"

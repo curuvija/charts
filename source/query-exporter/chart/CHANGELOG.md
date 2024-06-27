@@ -1,9 +1,9 @@
 # Changelog
 
-This changelog contains only the last changes. Check https://github.com/curuvija/helm-charts/releases for each release.
+This changelog contains only the last changes. Check https://github.com/curuvija/charts/releases for each release.
 
-## [2.0.1] - 2023-08-28
+## [2.1.0] - 2023-06-27
 
 ### Changed
 
-- notes fixed wrong port and message
+- docker image version updated to 2.10.0

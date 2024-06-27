@@ -48,7 +48,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - name: config-from-secret-volume
-              mountPath: /config.yaml
+              mountPath: /config/config.yaml
               subPath: config.yaml
               readOnly: true
           ports:

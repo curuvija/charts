@@ -1,0 +1,41 @@
+repositories:
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+
+releases:
+  - name: kube-prometheus-stack
+    namespace: monitoring
+    createNamespace: true
+    labels:
+      app: kube-prometheus-stack
+      query-exporter-lab: "true"
+      oracledb-exporter-lab: "true"
+    chart: prometheus-community/kube-prometheus-stack
+    version: 54.1.0
+    values:
+      - helm_values/kube-prometheus-stack-values.yaml
+  - name: query-exporter
+    namespace: monitoring
+    labels:
+      app: query-exporter
+      query-exporter-lab: "true"
+    needs:
+      - monitoring/kube-prometheus-stack
+    chart: curuvija/query-exporter
+    hooks:
+      - events: ["presync"]
+        showlogs: true
+        command: kubectl
+        args: ["-n", "monitoring", "create", "secret", "generic", "--from-file", "lab/query-exporter/config.yaml", "query-exporter-config-secret"]
+    values:
+      - helm_values/query-exporter-values.yaml
+  - name: oracledb-exporter
+    namespace: monitoring
+    labels:
+      app: oracledb-exporter
+      oracledb-exporter-lab: "true"
+    needs:
+      - monitoring/kube-prometheus-stack
+    chart: curuvija/oracledb-exporter
+    values:
+      - helm_values/oracledb-exporter-values.yaml

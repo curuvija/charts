@@ -16,6 +16,7 @@ substitutions:
       replace: 'version: "{{#capture expression="^[\D]*(?<semver>(?:\d+\.)?(?:\d+\.)?(?:\*|\d+))$" group="semver"}}{{version}}{{/capture}}"'
 releaseTypes:
   items:
+    filterTags: "^data-prepper-([0-9]\\d*)\\.([0-9]\\d*)\\.([0-9]\\d*)$"
     mainline:
       gitTagNames:
         - "data-prepper-{{version}}"

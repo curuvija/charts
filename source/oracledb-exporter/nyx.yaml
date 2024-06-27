@@ -1,7 +1,7 @@
 initialVersion: "1.0.0"
 releaseAssets:
   chart:
-    description: "**/source/{{#environmentVariable}}HELM_CHART_NAME{{/environmentVariable}}/Chart.yaml"
+    description: "OracleDB Exporter Helm Chart exports Prometheus metrics from SQL queries"
     fileName: "oracledb-exporter-{{version}}.tgz"
     path: "build/oracledb-exporter-{{version}}.tgz"
     type: "application/octet-stream"
@@ -20,5 +20,6 @@ substitutions:
 releaseTypes:
   items:
     mainline:
+      filterTags: "^oracledb-exporter-([0-9]\\d*)\\.([0-9]\\d*)\\.([0-9]\\d*)$"
       gitTagNames:
         - "oracledb-exporter-{{version}}"

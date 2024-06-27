@@ -8,11 +8,19 @@ env:
 
 tasks:
   default:
-    desc:
+    desc: display info about taskfile usage
     cmds:
       - |
         echo "To be able to use commands in this Taskfile you'll have to set environment variable HELM_CHART_NAME."
         if [ -z ${HELM_CHART_NAME+x} ]; then echo "HELM_CHART_NAME is unset"; else echo "HELM_CHART_NAME is set to '$HELM_CHART_NAME'."; fi
+      - task --list
+  prepare:
+    desc: prepares build stuff
+    cmds:
+      - rm -rf .cr-release-packages
+      - rm -rf build
+      - mkdir .cr-release-packages
+      - mkdir build
   new:
     desc: creates new helm chart out of starter chart
     requires:
@@ -32,6 +40,19 @@ tasks:
     cmds:
       - helm lint $SOURCE_DIR/$HELM_CHART_NAME/chart/chart
       #- helm template $SOURCE_DIR/$HELM_CHART_NAME/chart | kubeval
+  lab.up:
+    desc: run kubernetes local lab for helm chart (export HELM_CHART_NAME variable with the name of helm chart before running it)
+    requires:
+      vars: 
+        - HELM_CHART_NAME
+    cmds:
+      - kind create cluster --config config/lab/kubernetes/cluster.yaml --name $HELM_CHART_NAME-cluster
+      - kubectl config use-context kind-$HELM_CHART_NAME-cluster
+      - helmfile -f config/kubernetes/lab/helmfile.yaml -l $HELM_CHART_NAME-lab=true sync
+  lab.down:
+    desc: destroy local kubernetes lab
+    cmds:
+      - kind delete cluster --name $HELM_CHART_NAME-cluster
   docs:
     desc: renders docs
     requires:
@@ -83,12 +104,24 @@ tasks:
       vars:
         - GH_TOKEN
     cmds:
+      # TODO: use nyx to upload packages instead
       - cr upload -o curuvija --git-repo $GITHUB_REPO --package-path .cr-release-packages/ --token $GH_TOKEN --release-notes-file CHANGELOG.md
-      - git checkout gh-pages
-      - cr index --index-path index.yaml --package-path .cr-release-packages/ --owner curuvija --git-repo $GITHUB_REPO
+  index:
+    desc: add released helm chart(s) to index
+    requires:
+      vars:
+        - GH_TOKEN
+    cmds:
+      # TODO: check if you can use --push switch instead of all other commands
+      #- git checkout gh-pages
+      - cr index --index-path index.yaml --package-path .cr-release-packages/ --owner curuvija --git-repo $GITHUB_REPO --push
+      #- git add index.yaml
+      #- git commit -m "update index"
+      #- git push
   release:
     desc: release helm chart
     cmds:
+      - task: prepare
       - task: lint
       - task: golden
       - task: infer
@@ -99,7 +132,8 @@ tasks:
       - task: diff
       - task: mark
       - task: publish
-      - task: upload
+      - task: upload # TODO: upload helm chart using nyx instead of using cr
+      - task: index
       # TODO: check if you can have a webhook event created when PR is approved so that you can release the version to github pages https://stackoverflow.com/questions/56706424/github-api-does-a-webhook-fire-on-a-pull-request-approval-event
   infer:
     desc: nyx summary
