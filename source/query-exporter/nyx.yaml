@@ -1,4 +1,4 @@
-initialVersion: "2.1.0"
+initialVersion: "1.0.0"
 releaseAssets:
   chart:
     description: "Query Exporter Helm Chart Export Prometheus metrics from SQL queries"

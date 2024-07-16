@@ -1,9 +1,5 @@
-# Changelog
+# query-exporter
 
-This changelog contains only the last changes. Check https://github.com/curuvija/charts/releases for each release.
+## [1.0.0](https://github.com/curuvija/charts/releases/1.0.0) (2024-07-16)
 
-## [2.1.0] - 2023-06-27
-
-### Changed
-
-- docker image version updated to 2.10.0
+Initial release.
