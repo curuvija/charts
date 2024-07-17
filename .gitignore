@@ -3,3 +3,4 @@ temp/
 TODO.md
 build
 .cr-release-packages
+.env

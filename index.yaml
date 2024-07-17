@@ -8,17 +8,17 @@ entries:
           email: curuvija@live.com
     apiVersion: v2
     appVersion: 0.6.0
-    created: "2024-06-26T06:34:53.68298609+02:00"
+    created: "2024-07-17T12:43:23.8234104+02:00"
     description: A Helm chart to export query results from Oracle DB
-    digest: 1bd9f1d76a0d4bcb151b908536f5d61ea75d2f5ae45cf6614e73ba33a614301b
+    digest: 898e6ceb61337cd2d22a4d6ac75dfaf8f9e67881ba66062f42955183df9e84d1
     maintainers:
     - email: curuvija@live.com
       name: Milos Curuvija
     name: oracledb-exporter
     type: application
     urls:
-    - https://github.com/curuvija/charts/releases/download/oracledb-exporter-1.1.0/oracledb-exporter-1.1.0.tgz
-    version: 1.1.0
+    - https://github.com/curuvija/charts/releases/download/oracledb-exporter-1.0.0/oracledb-exporter-1.0.0.tgz
+    version: 1.0.0
   query-exporter:
   - annotations:
       artifacthub.io/category: monitoring-logging
@@ -30,16 +30,16 @@ entries:
           email: curuvija@live.com
     apiVersion: v2
     appVersion: 2.10.0
-    created: "2024-06-27T06:11:08.485793225+02:00"
+    created: "2024-07-17T12:43:24.1440356+02:00"
     description: A Helm chart for query-exporter (export Prometheus metrics from SQL
       queries)
-    digest: 30656151d1f4a86136a7909d1ca593fec81a40bc47609a93c48422d0fe87affa
+    digest: 151008d1a34e036232882600107cb46ebb956637a9d2b8d9b3880f2044603538
     maintainers:
     - email: curuvija@live.com
       name: Milos Curuvija
     name: query-exporter
     type: application
     urls:
-    - https://github.com/curuvija/charts/releases/download/query-exporter-2.1.0/query-exporter-2.1.0.tgz
-    version: 2.1.0
-generated: "2024-06-27T06:11:08.485812634+02:00"
+    - https://github.com/curuvija/charts/releases/download/query-exporter-1.0.0/query-exporter-1.0.0.tgz
+    version: 1.0.0
+generated: "2024-07-17T12:43:24.1445515+02:00"
