@@ -48,7 +48,7 @@ tasks:
     cmds:
       - kind create cluster --config config/lab/kubernetes/cluster.yaml --name $HELM_CHART_NAME-cluster
       - kubectl config use-context kind-$HELM_CHART_NAME-cluster
-      - helmfile -f config/kubernetes/lab/helmfile.yaml -l $HELM_CHART_NAME-lab=true sync
+      - helmfile -f config/lab/kubernetes/helmfile.yaml -l $HELM_CHART_NAME-lab=true sync
   lab.down:
     desc: destroy local kubernetes lab
     cmds:
