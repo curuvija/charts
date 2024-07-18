@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: release-name-query-exporter
   labels:
-    helm.sh/chart: query-exporter-2.1.0
+    helm.sh/chart: query-exporter-1.0.1
     app.kubernetes.io/name: query-exporter
     app.kubernetes.io/instance: release-name
     app: release-name
@@ -19,7 +19,7 @@ kind: Service
 metadata:
   name: release-name-query-exporter
   labels:
-    helm.sh/chart: query-exporter-2.1.0
+    helm.sh/chart: query-exporter-1.0.1
     app.kubernetes.io/name: query-exporter
     app.kubernetes.io/instance: release-name
     app: release-name
@@ -45,7 +45,7 @@ kind: Deployment
 metadata:
   name: release-name-query-exporter
   labels:
-    helm.sh/chart: query-exporter-2.1.0
+    helm.sh/chart: query-exporter-1.0.1
     app.kubernetes.io/name: query-exporter
     app.kubernetes.io/instance: release-name
     app: release-name
@@ -85,7 +85,7 @@ spec:
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: config-from-secret-volume
-              mountPath: /config.yaml
+              mountPath: /config/config.yaml
               subPath: config.yaml
               readOnly: true
           ports:
@@ -114,7 +114,7 @@ metadata:
   name: release-name-query-exporter
   labels:
     app: query-exporter
-    chart: query-exporter-2.1.0
+    chart: query-exporter-1.0.1
     heritage: Helm
 spec:
   selector:
