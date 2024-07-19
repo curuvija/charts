@@ -4,7 +4,7 @@ env:
   GITHUB_REPO: charts
   CLUSTER_NAME: test-helm-chart-cluster
   SOURCE_DIR: source
-  NYX_OPTIONS: "--dry-run --debug" # add extra options to nyx command like if you want to manually bump the version for example: 'export NYX_OPTIONS="--bump=minor --dry-run --debug")'
+  NYX_OPTIONS: "--debug" # add extra options to nyx command like if you want to manually bump the version for example: 'export NYX_OPTIONS="--bump=minor --dry-run --debug")'
 
 tasks:
   default:
@@ -38,7 +38,7 @@ tasks:
       vars: 
         - HELM_CHART_NAME
     cmds:
-      - helm lint $SOURCE_DIR/$HELM_CHART_NAME/chart/chart
+      - helm lint $SOURCE_DIR/$HELM_CHART_NAME/chart
       #- helm template $SOURCE_DIR/$HELM_CHART_NAME/chart | kubeval
   lab.up:
     desc: run kubernetes local lab for helm chart (export HELM_CHART_NAME variable with the name of helm chart before running it)
@@ -243,7 +243,7 @@ tasks:
     desc: run polaris against helm chart, check https://github.com/FairwindsOps/polaris/blob/master/examples/config.yaml for config options
     cmds:
       - task: golden
-      - docker run -t -v $(pwd)/tests/$HELM_CHART_NAME/golden:/templates quay.io/fairwinds/polaris:latest polaris audit --only-show-failed-tests --format=pretty --audit-path /templates
+      - docker run -t -v $(pwd)/$SOURCE_DIR/$HELM_CHART_NAME/tests/golden:/templates quay.io/fairwinds/polaris:latest polaris audit --only-show-failed-tests --format=pretty --audit-path /templates
   trivy:
     desc: run trivy against helm chart
     cmds:

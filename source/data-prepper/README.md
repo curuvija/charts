@@ -1,4 +1,7 @@
 
+Since of 03.07.2024 there is an official Helm chart https://github.com/opensearch-project/helm-charts/tree/main/charts/data-prepper
+which you can use instead of this one.
+
 ## Info
 
 * ingestion logs example https://github.com/opensearch-project/data-prepper/tree/main/examples/log-ingestion
