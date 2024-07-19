@@ -30,6 +30,28 @@ entries:
           email: curuvija@live.com
     apiVersion: v2
     appVersion: 2.10.0
+    created: "2024-07-19T05:50:37.619698776+02:00"
+    description: A Helm chart for query-exporter (export Prometheus metrics from SQL
+      queries)
+    digest: cd6e049b87444b6b3aa843095e774c722e225e6afd0684beaefe226907a9622c
+    maintainers:
+    - email: curuvija@live.com
+      name: Milos Curuvija
+    name: query-exporter
+    type: application
+    urls:
+    - https://github.com/curuvija/charts/releases/download/query-exporter-1.0.1/query-exporter-1.0.1.tgz
+    version: 1.0.1
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/links: |
+        - name: support
+          url: https://github.com/curuvija/charts/issues
+      artifacthub.io/maintainers: |
+        - name: "Milos Curuvija"
+          email: curuvija@live.com
+    apiVersion: v2
+    appVersion: 2.10.0
     created: "2024-07-17T12:43:24.1440356+02:00"
     description: A Helm chart for query-exporter (export Prometheus metrics from SQL
       queries)
@@ -42,4 +64,4 @@ entries:
     urls:
     - https://github.com/curuvija/charts/releases/download/query-exporter-1.0.0/query-exporter-1.0.0.tgz
     version: 1.0.0
-generated: "2024-07-17T12:43:24.1445515+02:00"
+generated: "2024-07-19T05:50:37.619706433+02:00"
