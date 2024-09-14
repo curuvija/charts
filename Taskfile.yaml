@@ -27,7 +27,7 @@ tasks:
       vars:
         - HELM_CHART_NAME
     cmds:
-      - helm create $HELM_CHART_NAME --starter $(pwd)/$SOURCE_DIR/chart/starter && mv $HELM_CHART_NAME $SOURCE_DIR
+      - helm create $HELM_CHART_NAME --starter $(pwd)/$SOURCE_DIR/starter/chart && mv $HELM_CHART_NAME $SOURCE_DIR
   commitlint:
     desc: run commitlint
     cmds:
