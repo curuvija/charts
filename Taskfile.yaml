@@ -1,7 +1,6 @@
 version: 3
 
 tasks:
-  # TODO: check next time which command is better
   index:
     desc: update index
     cmds:

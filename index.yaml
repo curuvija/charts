@@ -8,6 +8,24 @@ entries:
           email: curuvija@live.com
     apiVersion: v2
     appVersion: 0.6.0
+    created: "2024-09-14T21:37:26.82441709+02:00"
+    description: A Helm chart to export query results from Oracle DB
+    digest: c083616077596f576fd62cde63a433a822f5aff14c75c32b5fad3654e7957428
+    maintainers:
+    - email: curuvija@live.com
+      name: Milos Curuvija
+    name: oracledb-exporter
+    type: application
+    urls:
+    - https://github.com/curuvija/charts/releases/download/oracledb-exporter-1.0.1/oracledb-exporter-1.0.1.tgz
+    version: 1.0.1
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/maintainers: |
+        - name: "Milos Curuvija"
+          email: curuvija@live.com
+    apiVersion: v2
+    appVersion: 0.6.0
     created: "2024-07-17T12:43:23.8234104+02:00"
     description: A Helm chart to export query results from Oracle DB
     digest: 898e6ceb61337cd2d22a4d6ac75dfaf8f9e67881ba66062f42955183df9e84d1
@@ -64,4 +82,4 @@ entries:
     urls:
     - https://github.com/curuvija/charts/releases/download/query-exporter-1.0.0/query-exporter-1.0.0.tgz
     version: 1.0.0
-generated: "2024-07-19T05:50:37.619706433+02:00"
+generated: "2024-09-14T21:37:26.824450567+02:00"
