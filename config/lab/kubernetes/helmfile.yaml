@@ -29,6 +29,16 @@ releases:
         args: ["-n", "monitoring", "create", "secret", "generic", "--from-file", "query-exporter/config.yaml", "query-exporter-config-secret"]
     values:
       - helm_values/query-exporter-values.yaml
+  - name: oracledb
+    namespace: monitoring
+    labels:
+      app: oracledb
+      oracledb-exporter-lab: "true"
+    needs:
+      - monitoring/kube-prometheus-stack
+    chart: ../../../source/oracledb/chart
+    values:
+      - helm_values/oracledb-exporter-values.yaml
   - name: oracledb-exporter
     namespace: monitoring
     labels:
@@ -36,6 +46,7 @@ releases:
       oracledb-exporter-lab: "true"
     needs:
       - monitoring/kube-prometheus-stack
+      - monitoring/oracledb
     chart: ../../../source/oracledb-exporter/chart
     values:
       - helm_values/oracledb-exporter-values.yaml
