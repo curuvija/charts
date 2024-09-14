@@ -48,6 +48,19 @@ tasks:
     cmds:
       - kind create cluster --config config/lab/kubernetes/cluster.yaml --name $HELM_CHART_NAME-cluster
       - kubectl config use-context kind-$HELM_CHART_NAME-cluster
+      # kindnet network plugin doesn't support network policies (you can create them but will not work) so yoy need to
+      # install alternative plugin like calico or flannel
+      - kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
+      # flannel
+      #- kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+      - helmfile -f config/lab/kubernetes/helmfile.yaml -l $HELM_CHART_NAME-lab=true sync
+  lab.sync:
+    desc: run helmfile sync
+    requires:
+      vars:
+        - HELM_CHART_NAME
+    cmds:
+      - kubectl config use-context kind-$HELM_CHART_NAME-cluster
       - helmfile -f config/lab/kubernetes/helmfile.yaml -l $HELM_CHART_NAME-lab=true sync
   lab.down:
     desc: destroy local kubernetes lab
@@ -193,7 +206,7 @@ tasks:
       - |
         echo "working on chart $HELM_CHART_NAME"
         for file in source/$HELM_CHART_NAME/tests/values/*; do
-          echo "working on file $($file)"
+          echo "working on file $file"
           helm template $SOURCE_DIR/$HELM_CHART_NAME/chart -n default --values $file > source/$HELM_CHART_NAME/tests/golden/$(basename $file)
         done
   cluster.create:

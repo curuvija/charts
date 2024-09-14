@@ -23,10 +23,18 @@ releases:
       - monitoring/kube-prometheus-stack
     chart: ../../../source/query-exporter/chart
     hooks:
+#      - events: ["presync"]
+#        showlogs: true
+#        command: kubectl
+#        args: ["-n", "monitoring", "delete", "secret", "query-exporter-config-secret"]
+#      - events: ["presync"]
+#        showlogs: true
+#        command: kubectl
+#        args: ["-n", "monitoring", "create", "secret", "generic", "--from-file", "query-exporter/config.yaml", "--dry-run=client", "-o", "yaml", "query-exporter-config-secret", ">", "query-exporter/secret.yaml" ]
       - events: ["presync"]
         showlogs: true
-        command: kubectl
-        args: ["-n", "monitoring", "create", "secret", "generic", "--from-file", "query-exporter/config.yaml", "query-exporter-config-secret"]
+        command: bash
+        args: ["-c", "scripts/query-exporter-secret.sh"]
     values:
       - helm_values/query-exporter-values.yaml
   - name: oracledb-exporter
