@@ -13,6 +13,15 @@ metadata:
     app.kubernetes.io/version: "0.6.0"
     app.kubernetes.io/managed-by: Helm
 ---
+# Source: oracledb-exporter/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name:  release-name-oracledb-exporter-secret
+data:
+    datasource: b3JhY2xlOi8vc3lzdGVtOjE5Mi4xNjguODguMjIyQG9yYWNsZToxNTIxL3hl
+type: Opaque
+---
 # Source: oracledb-exporter/templates/configmap.yaml
 apiVersion: v1
 kind: ConfigMap
@@ -108,7 +117,7 @@ spec:
             - name: DATA_SOURCE_NAME
               valueFrom:
                 secretKeyRef:
-                  name: oracledb-exporter-secret
+                  name: release-name-oracledb-exporter-secret
                   key: datasource
             - name: CUSTOM_METRICS
               value: /tmp/custom-metrics.toml
