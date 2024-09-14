@@ -1,5 +1,8 @@
 # oracledb-exporter
 
-## [1.0.0](https://github.com/curuvija/charts/releases/1.0.0) (2024-07-17)
+## [1.0.1](https://github.com/curuvija/charts/releases/1.0.1) (2024-09-14)
 
-No changes.
+### Fixed
+
+* [3c2ea](https://github.com/curuvija/charts/commit/3c2eac6d5c83d9ab32189fda03500cdffe3735ea) fix: fix service missing endpoint (Milos Curuvija)
+
