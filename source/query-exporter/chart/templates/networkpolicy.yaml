@@ -1,0 +1,65 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "query-exporter.fullname" . }}-ingress
+  labels:
+    {{- include "query-exporter.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{ include "query-exporter.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        {{- if .Values.networkPolicy.ingressNamespaceSelectorLabels }}
+        - namespaceSelector:
+            matchLabels:
+              {{- range $key, $value := .Values.networkPolicy.ingressNamespaceSelectorLabels }}
+              {{ $key | quote }}: {{ $value | quote }}
+              {{- end }}
+        {{- end }}
+        {{- if .Values.networkPolicy.ingressPodSelectorLabels }}
+        - podSelector:
+            matchLabels:
+              {{- range $key, $value := .Values.networkPolicy.ingressPodSelectorLabels }}
+              {{ $key | quote }}: {{ $value | quote }}
+              {{- end }}
+        {{- end }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.service.port }}
+  {{- if .Values.networkPolicy.allowExternalEgress }}
+  egress:
+    - {}
+  {{- else }}
+  egress:
+    # Allow dns resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+    {{- if .Values.networkPolicy.extraEgress }}
+{{/*    {{- include "common.tplvalues.render" ( dict "value" .Values.networkPolicy.extraEgress "context" $ ) | nindent 4 }}*/}}
+    {{- end }}
+  {{- end }}
+{{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "query-exporter.fullname" . }}-egress-deny-all-traffic
+  labels:
+    {{- include "query-exporter.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{ include "query-exporter.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Egress
